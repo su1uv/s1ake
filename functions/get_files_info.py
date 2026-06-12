@@ -3,9 +3,6 @@ import os
 
 def get_files_info(working_directory: str, directory: str = ".") -> str:
     try:
-        if not os.path.isdir(directory):
-            raise ValueError
-
         working_dir_abs: str = os.path.abspath(working_directory)
         target_dir: str = os.path.normpath(os.path.join(working_dir_abs, directory))
         valid_target_dir: bool = (
@@ -13,8 +10,19 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
         )
         if not valid_target_dir:
             raise AssertionError
+        if not os.path.isdir(target_dir):
+            raise ValueError
 
-        return f'Success: "{directory}" is within the working directory'
+        files: list[str] = os.listdir(target_dir)
+        files_metadata: list[str] = list(
+            map(
+                lambda f: (
+                    f"- {f}: file_size={os.path.getsize(os.path.join(target_dir, f))} bytes, is_dir={os.path.isdir(os.path.join(target_dir, f))}"
+                ),
+                files,
+            )
+        )
+        return "\n".join(files_metadata)
     except ValueError:
         return f'Error: "{directory}" is not a directory'
     except AssertionError:

@@ -1,5 +1,4 @@
 import os
-from io import TextIOWrapper
 
 from config import MAX_CHARS
 

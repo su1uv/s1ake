@@ -8,13 +8,13 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
         valid_target_dir: bool = (
             os.path.commonpath([working_dir_abs, target_dir]) == working_dir_abs
         )
-        if not valid_target_dir:
-            raise AssertionError
         if not os.path.isdir(target_dir):
             raise ValueError
+        if not valid_target_dir:
+            raise AssertionError
 
         files: list[str] = os.listdir(target_dir)
-        files_metadata: list[str] = list(
+        files_info: list[str] = list(
             map(
                 lambda f: (
                     f"- {f}: file_size={os.path.getsize(os.path.join(target_dir, f))} bytes, is_dir={os.path.isdir(os.path.join(target_dir, f))}"
@@ -22,7 +22,7 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
                 files,
             )
         )
-        return "\n".join(files_metadata)
+        return "\n".join(files_info)
     except ValueError:
         return f'Error: "{directory}" is not a directory'
     except AssertionError:

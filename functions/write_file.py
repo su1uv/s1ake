@@ -8,7 +8,6 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
         valid_target_dir: bool = (
             os.path.commonpath([working_dir_abs, target_dir]) == working_dir_abs
         )
-        print(target_dir)
         if not valid_target_dir:
             raise AssertionError
         if not os.path.isdir(os.path.dirname(target_dir)):

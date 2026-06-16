@@ -1,5 +1,7 @@
 import argparse
 import os
+import sys
+from email import message
 
 from dotenv import load_dotenv
 from google import genai
@@ -22,43 +24,53 @@ def main():
     parser: argparse.ArgumentParser = argparse.ArgumentParser(description="chatbot")
     parser.add_argument("user_prompt", type=str, help="user prompt")
     parser.add_argument("--verbose", action="store_true", help="enable verbose output")
+
+    messages: list[types.Content] = []
     args: argparse.Namespace = parser.parse_args()
-
-    messages: list[types.Content] = [
+    messages.append(
         types.Content(role="user", parts=[types.Part(text=args.user_prompt)])
-    ]
-
-    response: types.GenerateContentResponse = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=messages,
-        config=types.GenerateContentConfig(
-            tools=[available_functions], system_instruction=system_prompt
-        ),
     )
-    if response.usage_metadata is None:
-        raise RuntimeError("api request went wrong")
+    for _ in range(20):
+        response: types.GenerateContentResponse = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=messages,
+            config=types.GenerateContentConfig(
+                tools=[available_functions], system_instruction=system_prompt
+            ),
+        )
+        if response.usage_metadata is None:
+            raise RuntimeError("api request went wrong")
 
-    func_results: list[types.Part] = []
-    if response.function_calls is not None:
-        for fc in response.function_calls:
-            func_call_result = call_function(fc)
-            if (
-                not func_call_result.parts
-                or not isinstance(
-                    func_call_result.parts[0].function_response, types.FunctionResponse
-                )
-                or not func_call_result.parts[0].function_response.response
-            ):
-                raise Exception
-            func_results.append(func_call_result.parts[0])
+        if response.function_calls is not None:
+            func_results: list[types.Part] = []
+            for fc in response.function_calls:
+                func_call_result = call_function(fc)
+                if (
+                    not func_call_result.parts
+                    or not isinstance(
+                        func_call_result.parts[0].function_response,
+                        types.FunctionResponse,
+                    )
+                    or not func_call_result.parts[0].function_response.response
+                ):
+                    raise Exception("no function response")
+                func_results.append(func_call_result.parts[0])
+                if args.verbose:
+                    print(f"-> {func_call_result.parts[0].function_response.response}")
+
+            messages.append(types.Content(role="user", parts=func_results))
+
             if args.verbose:
-                print(f"-> {func_call_result.parts[0].function_response.response}")
+                print(f"User prompt: {args.user_prompt}")
+                print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+                print(
+                    f"Response tokens: {response.usage_metadata.candidates_token_count}"
+                )
+        else:
+            print(response.text)
+            return
 
-        if args.verbose:
-            print(f"User prompt: {args.user_prompt}")
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-        print(response.text)
+    sys.exit("the prompt reach the maximum number of iterations")
 
 
 if __name__ == "__main__":

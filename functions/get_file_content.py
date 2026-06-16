@@ -1,5 +1,7 @@
 import os
 
+from google.genai import types
+
 from config import MAX_CHARS
 
 
@@ -31,3 +33,19 @@ def get_file_content(working_directory: str, file_path: str) -> str:
         return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
     except Exception as e:
         return f"Error: {e}"
+
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Read the content of an specified file relative to the working directory",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Path file to show contents from, relative to the working directory",
+            )
+        },
+        required=["file_path"],
+    ),
+)

@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 from google.genai.client import Client
 
-from call_function import available_functions
+from call_function import available_functions, call_function
 from prompts import system_prompt
 
 load_dotenv()
@@ -38,15 +38,26 @@ def main():
     if response.usage_metadata is None:
         raise RuntimeError("api request went wrong")
 
-    if args.verbose:
-        print(f"User prompt: {args.user_prompt}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-
+    func_results: list[types.Part] = []
     if response.function_calls is not None:
         for fc in response.function_calls:
-            print(f"Calling function: {fc.name}({fc.args})")
+            func_call_result = call_function(fc)
+            if (
+                not func_call_result.parts
+                or not isinstance(
+                    func_call_result.parts[0].function_response, types.FunctionResponse
+                )
+                or not func_call_result.parts[0].function_response.response
+            ):
+                raise Exception
+            func_results.append(func_call_result.parts[0])
+            if args.verbose:
+                print(f"-> {func_call_result.parts[0].function_response.response}")
 
+        if args.verbose:
+            print(f"User prompt: {args.user_prompt}")
+            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
         print(response.text)
 
 

@@ -1,7 +1,6 @@
 import os
 import subprocess
 from subprocess import CompletedProcess
-from sys import stdout
 
 
 def run_python_file(

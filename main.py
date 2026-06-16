@@ -6,6 +6,8 @@ from google import genai
 from google.genai import types
 from google.genai.client import Client
 
+from prompts import system_prompt
+
 load_dotenv()
 
 
@@ -26,7 +28,11 @@ def main():
     ]
 
     response: types.GenerateContentResponse = client.models.generate_content(
-        model="gemini-2.5-flash", contents=messages
+        model="gemini-2.5-flash",
+        contents=messages,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt, temperature=0
+        ),
     )
     if response.usage_metadata is None:
         raise RuntimeError("api request went wrong")

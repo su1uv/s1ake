@@ -1,0 +1,15 @@
+Screen {
+    layout: horizontal;
+}
+
+.left-bar {
+    height: 100%;
+    width: 30%;
+    border: solid green;
+}
+
+.body {
+    height: 100%;
+    width: 70%;
+    border: solid green;
+}

@@ -1,34 +1,31 @@
-from textual.app import App, ComposeResult, RenderResult
-from textual.widgets import Input, Static, TextArea
+from textual.app import App, ComposeResult
 from textual.containers import VerticalGroup, VerticalScroll
+from textual.widgets import Input, Label, Static
 
 
-class InsertPrompt(Input):
+class InputPrompt(Input):
     pass
 
 
-class Prompt(TextArea):
+class Prompt(Label):
     pass
-    
 
-class PromptHistory(VerticalGroup):
-    
+
+class PromptHistory(VerticalScroll):
     def compose(self) -> ComposeResult:
-        yield VerticalScroll(Prompt("Prompt 1"), Prompt("Prompt 2"))
-        yield InsertPrompt()
-    
+        yield VerticalGroup(
+            Prompt("Prompt 1"), Prompt("Prompt 2"), classes="prompt-history"
+        )
+
 
 class Bootgent(App):
     CSS_PATH = "styles.tcss"
 
     def compose(self) -> ComposeResult:
         yield Static("One", classes="left-bar")
-        yield VerticalGroup(PromptHistory(), classes="body")
+        yield VerticalGroup(PromptHistory(), InputPrompt(), classes="body")
 
 
 if __name__ == "__main__":
     app = Bootgent()
     app.run()
-
-
-

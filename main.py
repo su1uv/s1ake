@@ -7,8 +7,7 @@ from google import genai
 from google.genai import types
 from google.genai.client import Client
 
-from call_function import available_functions, call_function
-from prompts import system_prompt
+from functions.get_agent_response import get_agent_response
 
 load_dotenv()
 
@@ -30,44 +29,15 @@ def main():
         types.Content(role="user", parts=[types.Part(text=args.user_prompt)])
     )
     for _ in range(20):
-        response: types.GenerateContentResponse = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=messages,
-            config=types.GenerateContentConfig(
-                tools=[available_functions], system_instruction=system_prompt
-            ),
-        )
-        if response.usage_metadata is None:
+        r: types.GenerateContentResponse = get_agent_response(messages, client, args)
+
+        if r.usage_metadata is None:
             raise RuntimeError("api request went wrong")
 
-        if response.function_calls is not None:
-            func_results: list[types.Part] = []
-            for fc in response.function_calls:
-                func_call_result = call_function(fc)
-                if (
-                    not func_call_result.parts
-                    or not isinstance(
-                        func_call_result.parts[0].function_response,
-                        types.FunctionResponse,
-                    )
-                    or not func_call_result.parts[0].function_response.response
-                ):
-                    raise Exception("no function response")
-                func_results.append(func_call_result.parts[0])
-                if args.verbose:
-                    print(f"-> {func_call_result.parts[0].function_response.response}")
-
-            messages.append(types.Content(role="user", parts=func_results))
-
-            if args.verbose:
-                print(f"User prompt: {args.user_prompt}")
-                print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-                print(
-                    f"Response tokens: {response.usage_metadata.candidates_token_count}"
-                )
-        else:
-            print(response.text)
-            return
+        if args.verbose:
+            print(f"User prompt: {args.user_prompt}")
+            print(f"Prompt tokens: {r.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {r.usage_metadata.candidates_token_count}")
 
     sys.exit("the prompt reach the maximum number of iterations")
 

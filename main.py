@@ -39,6 +39,10 @@ def main():
             print(f"Prompt tokens: {r.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {r.usage_metadata.candidates_token_count}")
 
+        if r.text:
+            print(r.text)
+            return
+
     sys.exit("the prompt reach the maximum number of iterations")
 
 

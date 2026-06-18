@@ -10,16 +10,16 @@ from prompts import system_prompt
 def get_agent_response(
     messages: list[types.Content], client: Client, args: argparse.Namespace
 ) -> types.GenerateContentResponse:
-    response: types.GenerateContentResponse = client.models.generate_content(
+    r: types.GenerateContentResponse = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=messages,
         config=types.GenerateContentConfig(
             tools=[available_functions], system_instruction=system_prompt
         ),
     )
-    if response.function_calls is not None:
+    if r.function_calls is not None:
         func_results: list[types.Part] = []
-        for fc in response.function_calls:
+        for fc in r.function_calls:
             func_call_result = call_function(fc)
             if (
                 not func_call_result.parts
@@ -36,7 +36,4 @@ def get_agent_response(
 
             messages.append(types.Content(role="user", parts=func_results))
 
-        return response
-    else:
-        print(response.text)
-        return response
+    return r

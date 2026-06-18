@@ -13,9 +13,21 @@ Screen {
     height: 100%;
     width: 80%;
     background: #212529;
-    padding: 1 2;
+    padding: 0;
+    margin: 0;
 }
 
-#input {
-    margin: 5;
+.chat-hist {
+    height: 90%;
+    margin: 0;
+    padding: 1;
+}
+
+.input-prompt {
+    height: 7%;
+    padding: 0 1;
+}
+
+Label {
+    background: #343A40;
 }

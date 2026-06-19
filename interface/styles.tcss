@@ -17,13 +17,18 @@ Screen {
     margin: 0;
 }
 
-.chat-hist {
+ChatHistory {
     height: 90%;
     margin: 0;
     padding: 1;
 }
 
-.input-prompt {
+ChatMessage {
+    width: 100%;
+    padding: 0 1;
+}
+
+InputPrompt {
     height: 7%;
     padding: 0 1;
 }

@@ -1,5 +1,3 @@
-import argparse
-
 from google.genai import Client, types
 
 from call_function import available_functions, call_function
@@ -8,7 +6,8 @@ from prompts import system_prompt
 
 # TODO: clean this function, too much side-effects
 def get_agent_response(
-    messages: list[types.Content], client: Client, args: argparse.Namespace
+    messages: list[types.Content],
+    client: Client,
 ) -> types.GenerateContentResponse:
     r: types.GenerateContentResponse = client.models.generate_content(
         model="gemini-2.5-flash",
@@ -31,8 +30,7 @@ def get_agent_response(
             ):
                 raise Exception("no function response")
             func_results.append(func_call_result.parts[0])
-            if args.verbose:
-                print(f"-> {func_call_result.parts[0].function_response.response}")
+            # print(f"-> {func_call_result.parts[0].function_response.response}")
 
             messages.append(types.Content(role="user", parts=func_results))
 

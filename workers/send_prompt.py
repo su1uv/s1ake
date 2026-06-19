@@ -9,17 +9,17 @@ async def send_prompt(
     messages.append(types.Content(role="user", parts=[types.Part(text=user_prompt)]))
 
     for _ in range(20):
-        r: types.GenerateContentResponse = get_agent_response(messages, client)
-
+        r: types.GenerateContentResponse | str = get_agent_response(messages, client)
+        if isinstance(r, str):
+            return r
         if r.usage_metadata is None:
-            raise RuntimeError("api request went wrong")
+            return "[Error] api request went wrong"
 
         # if args.verbose:
-        #     print(f"User prompt: {args.user_prompt}")
         #     print(f"Prompt tokens: {r.usage_metadata.prompt_token_count}")
         #     print(f"Response tokens: {r.usage_metadata.candidates_token_count}")
 
         if r.text:
             return r.text
 
-    return "the prompt reach the maximum number of iterations"
+    return "[Warning] the prompt reach the maximum number of iterations"

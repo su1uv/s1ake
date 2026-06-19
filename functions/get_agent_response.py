@@ -1,14 +1,13 @@
+from call_function import available_functions, call_function
 from google.genai import Client, types
 
-from call_function import available_functions, call_function
-from prompts import system_prompt
+from app.prompts import system_prompt
 
 
-# TODO: clean this function, too much side-effects
 def get_agent_response(
     messages: list[types.Content],
     client: Client,
-) -> types.GenerateContentResponse:
+) -> types.GenerateContentResponse | str:
     r: types.GenerateContentResponse = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=messages,
@@ -18,8 +17,10 @@ def get_agent_response(
     )
     if r.function_calls is not None:
         func_results: list[types.Part] = []
+
         for fc in r.function_calls:
             func_call_result = call_function(fc)
+
             if (
                 not func_call_result.parts
                 or not isinstance(
@@ -28,7 +29,7 @@ def get_agent_response(
                 )
                 or not func_call_result.parts[0].function_response.response
             ):
-                raise Exception("no function response")
+                return "[Error] no function response"
             func_results.append(func_call_result.parts[0])
             # print(f"-> {func_call_result.parts[0].function_response.response}")
 

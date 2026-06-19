@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 from google.genai.client import Client
 
-from interface.bootgent import Bootgent
+from ui.bootgent import Bootgent
 
 load_dotenv()
 

@@ -1,7 +1,7 @@
-from call_function import available_functions, call_function
 from google.genai import Client, types
 
-from app.prompts import system_prompt
+from src.call_function import available_functions, call_function
+from src.prompts import system_prompt
 
 
 def get_agent_response(

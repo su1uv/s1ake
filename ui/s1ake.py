@@ -2,7 +2,6 @@ from google.genai import Client, types
 from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import VerticalGroup
-from textual.widgets import Footer, Header
 
 from ui.components.chat_history import ChatHistory
 from ui.components.input_prompt import InputPrompt
@@ -33,7 +32,5 @@ class S1ake(App):
         self.query_one("#token-info", TokenInfo).update_display(self.metadata)
 
     def compose(self) -> ComposeResult:
-        yield Header()
-        yield Footer()
         yield TokenInfo(classes="left-bar", id="token-info")
         yield VerticalGroup(ChatHistory(), InputPrompt(), classes="body")

@@ -1,13 +1,21 @@
+from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.widget import Widget
 
+from ui.components.banner import Banner
 from ui.components.bot_message import BotMessage
 from ui.components.chat_message import ChatMessage
 from ui.components.user_message import UserMessage
 
 
 class ChatHistory(VerticalScroll):
+    def compose(self) -> ComposeResult:
+        yield Banner(id="banner")
+
     def add_message(self, text: str, classes: str = "") -> Widget:
+        for banner in self.query("#banner"):
+            banner.remove()
+
         if classes == "user":
             msg: Widget = UserMessage(text, classes=classes)
         elif classes == "bot":

@@ -7,6 +7,7 @@ async def send_prompt(
     user_prompt: str,
     messages: list[types.Content],
     client: Client,
+    metadata: dict[str, int],
 ) -> str:
     messages.append(types.Content(role="user", parts=[types.Part(text=user_prompt)]))
 
@@ -19,6 +20,14 @@ async def send_prompt(
             return r
         if r.usage_metadata is None:
             return "[Error] api request went wrong"
+        if (
+            r.usage_metadata.prompt_token_count
+            and r.usage_metadata.candidates_token_count
+        ):
+            metadata["prompt_token_count"] += r.usage_metadata.prompt_token_count
+            metadata["candidates_token_count"] += (
+                r.usage_metadata.candidates_token_count
+            )
 
         if r.text:
             return r.text

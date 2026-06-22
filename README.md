@@ -1,45 +1,90 @@
-# Bootgent
+# s1ake
 
-Bootgent is a lightweight, command-line AI coding agent powered by Google's Gemini API. It can explore a sandboxed project directory, read files, run Python scripts, and write files — all via natural language prompts.
+> A terminal-native AI coding assistant powered by Google Gemini.
 
-## Features
+`s1ake` is a keyboard-driven TUI chat agent that can read, write, list, and execute code inside a sandboxed project directory — all while you chat in a clean, reactive terminal interface.
 
-- 🔍 **List directory contents** with file sizes and directory status
-- 📄 **Read file contents** with automatic truncation for large files
-- ▶️ **Run Python files** with optional command-line arguments
-- ✍️ **Write or overwrite files** within the working directory
-- 🔒 **Sandboxed access**: all file operations are restricted to a single working directory
-- 🤖 **Gemini-powered**: uses `gemini-2.5-flash` with function calling for autonomous task execution
+![Python](https://img.shields.io/badge/python-3.13-blue)
+![Textual](https://img.shields.io/badge/TUI-Textual-8A2BE2)
+![Gemini](https://img.shields.io/badge/LLM-Gemini_2.5_Flash-orange)
 
-## Requirements
+---
+
+## ✨ Features
+
+- **Interactive TUI chat** built with [Textual](https://textual.textualize.io/)
+- **Function-calling agent** powered by Google's `gemini-2.5-flash`
+- **Multi-turn conversation history** with persistent context
+- **Live token-usage sidebar** tracks prompt and response token counts
+- **Welcome banner** with ASCII art that fades away on first message
+- **Sandboxed file tools** restricted to the `./calculator` directory
+- **Async workers** keep the UI responsive while the model thinks
+
+---
+
+## 🖥️ Demo
+
+```text
+┌────────────────────────────────────────────────────────────────────┐
+│                                                                    │
+│  █████▀▀█████  ▄▄████ █████▀▀█████ █████  █████ █████▀▀█████      │
+│  ███▓█  ███▓█ ▀▀███▓█ ███▓█  ███▓█ ███▓█  ███▓█ ███▓█  ███▓█      │
+│  ███▒█  █████   ███▓█ ███▓█  ███▓█ ███▓█  █████ ███▓█  ███▒█      │
+│  ███░█          ███▒█ ███▒█▀▀███▒█ ███▒█▀▀████▄ ███▒█  █████      │
+│  ▀▀▀▀▀▀▀█████   ███░█ ███░█  ███▒█ ███░█  ███▒█ ███▒█▀ ▄▄▄▄▄      │
+│  █████  ███▓█   ███░█ ███░█  ███░█ ███░█  ███░█ ███░█  ███▓█      │
+│  ███▓█  ███▒█   ███ █ ███ █  ███ █ ███ █  ███ █ ███░█  ███▒█      │
+│  ███▒█  ███░█   ███ █ ███ █  ███ █ ███ █  ███ █ ███ █  ███░█      │
+│  █████▄▄█████   █████ █████  █████ █████  █████ █████▄▄█████      │
+│                                                                    │
+└────────────────────────────────────────────────────────────────────┘
+
+┌─ Token usage ─────────────────────────────────────────────────────┐
+│ Prompt:    42                                                      │
+│ Response:  128                                                     │
+└────────────────────────────────────────────────────────────────────┘
+
+> List the files in the calculator project
+
+♥ Here are the files in the calculator directory:
+  - calculator.py
+  - tests.py
+
+> Run the tests
+
+♥ Running tests...
+  test_add ... ok
+  test_sub ... ok
+```
+
+---
+
+## 🚀 Quick Start
+
+### Requirements
 
 - Python >= 3.13
 - A Google Gemini API key ([get one here](https://aistudio.google.com/app/apikey))
 
-## Installation
+### Installation
 
-1. Clone the repository:
+Clone the repository and install dependencies with [uv](https://docs.astral.sh/uv/):
 
-   ```bash
-   git clone <repository-url>
-   cd bootgent
-   ```
+```bash
+git clone <repository-url>
+cd s1ake
+uv sync
+```
 
-2. Create a virtual environment and install dependencies using [uv](https://docs.astral.sh/uv/):
+Or with pip:
 
-   ```bash
-   uv sync
-   ```
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-   Or with pip:
-
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-## Configuration
+### Configuration
 
 Set your Gemini API key as an environment variable:
 
@@ -47,78 +92,99 @@ Set your Gemini API key as an environment variable:
 export GEMINI_API_KEY="your-api-key-here"
 ```
 
-Alternatively, create a `.env` file in the project root:
+Or create a `.env` file in the project root:
 
 ```env
 GEMINI_API_KEY=your-api-key-here
 ```
 
-## Usage
+### Usage
 
-Run the agent with a prompt:
-
-```bash
-python main.py "your coding request here"
-```
-
-Enable verbose output to see each function call and token usage:
+Launch the terminal UI:
 
 ```bash
-python main.py "your coding request here" --verbose
+python main.py
 ```
 
-### Example
+Type your request at the bottom prompt and press `Enter`. The agent will plan and execute the necessary tool calls, then reply in the chat pane.
 
-```bash
-python main.py "List the files in the calculator project"
-```
+---
 
-The agent will plan and execute a sequence of tool calls to fulfill your request.
-
-## Available Tools
-
-The agent has access to the following tools, all scoped to the `./calculator` working directory:
+## 🛠️ Available Tools
 
 | Tool | Description |
 |------|-------------|
-| `get_files_info` | List files in a directory with size and type info |
+| `get_files_info` | List files in the sandboxed directory with size and type info |
 | `get_file_content` | Read the contents of a file |
 | `run_python_file` | Execute a Python file with optional arguments |
 | `write_file` | Write or overwrite a file |
 
-## Project Structure
+All file paths are resolved relative to `./calculator` and cannot escape that directory.
 
-```
+---
+
+## 📁 Project Structure
+
+```text
 .
-├── main.py                   # Entry point for the CLI agent
-├── call_function.py          # Function dispatch registry
-├── prompts.py                # System prompt for Gemini
-├── config.py                 # Configuration constants
-├── pyproject.toml            # Project metadata and dependencies
-├── functions/                # Tool implementations
+├── main.py                      # Entry point: launches the TUI
+├── pyproject.toml               # Project metadata and dependencies
+├── uv.lock                      # Locked dependency tree
+├── .env                         # Local environment variables (not committed)
+│
+├── ui/                          # Textual user interface
+│   ├── s1ake.py                 # Main app and layout
+│   ├── styles.tcss              # TCSS styling
+│   └── components/
+│       ├── banner.py            # ASCII welcome banner
+│       ├── chat_history.py      # Message scroll area
+│       ├── chat_message.py      # Base message widget
+│       ├── bot_message.py       # Bot message with markdown rendering
+│       ├── user_message.py      # User message widget
+│       ├── input_prompt.py      # Input bar
+│       └── token_info.py        # Token usage sidebar
+│
+├── workers/
+│   └── send_prompt.py           # Background worker that sends prompts
+│
+├── functions/                   # Tool implementations
+│   ├── get_agent_response.py    # Gemini API call with function calling
 │   ├── get_files_info.py
 │   ├── get_file_content.py
 │   ├── run_python_file.py
 │   └── write_file.py
-├── test_*.py                 # Manual test scripts for each tool
-└── calculator/               # Sandboxed working directory for the agent
+│
+├── src/                         # Shared agent logic
+│   ├── call_function.py         # Function dispatch registry
+│   ├── prompts.py               # System prompt
+│   └── config.py                # Configuration constants
+│
+├── tests/                       # Manual test scripts for tools
+├── calculator/                  # Sandboxed working directory
+└── README.md                    # You are here
 ```
 
-## Testing
+---
 
-Run the individual test scripts to verify tool behavior:
+## 🔒 Security
+
+File-system tools are scoped to the `./calculator` directory. Any path that resolves outside that directory is rejected, so the agent cannot read from or write to arbitrary locations on your machine.
+
+---
+
+## 🧪 Testing
+
+Run the manual tool test scripts:
 
 ```bash
-python test_get_files_info.py
-python test_get_file_content.py
-python test_run_python_file.py
-python test_write_file.py
+python tests/test_get_files_info.py
+python tests/test_get_file_content.py
+python tests/test_run_python_file.py
+python tests/test_write_file.py
 ```
 
-## Security
+---
 
-All file operations are constrained to the `./calculator` directory. Paths that resolve outside this directory are rejected to prevent unauthorized access to the host filesystem.
+## 📄 License
 
-## License
-
-This project is for educational and personal use.
+This project is for educational and portfolio use.

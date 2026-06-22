@@ -1,61 +1,13 @@
 from google.genai import Client, types
 from textual import work
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, VerticalGroup, VerticalScroll
-from textual.widget import Widget
-from textual.widgets import Footer, Header, Input, Label, Static
+from textual.containers import VerticalGroup
+from textual.widgets import Footer, Header
 
+from ui.components.chat_history import ChatHistory
+from ui.components.input_prompt import InputPrompt
+from ui.components.token_info import TokenInfo
 from workers.send_prompt import send_prompt
-
-
-class ChatMessage(Label):
-    pass
-
-
-class UserMessage(Horizontal):
-    def __init__(self, text: str, classes: str = "") -> None:
-        super().__init__(classes=classes)
-        self.text = text
-
-    def compose(self) -> ComposeResult:
-        yield Label(self.text, classes="user-content")
-
-
-class TokenInfo(Static):
-    def update_display(self, metadata: dict[str, int]) -> None:
-        self.update(
-            "[b]Usage[/b]\n"
-            "[dim]────────[/dim]\n"
-            f"[dim]Input[/dim]  [b]{metadata['prompt_token_count']}[/b]\n"
-            f"[dim]Output[/dim] [b]{metadata['candidates_token_count']}[/b]"
-        )
-
-
-class ChatHistory(VerticalScroll):
-    def add_message(self, text: str, classes: str = "") -> Widget:
-        if classes == "user":
-            msg: Widget = UserMessage(text, classes=classes)
-        else:
-            msg = ChatMessage(text, classes=classes)
-        self.mount(msg)
-        self.scroll_end(animate=False)
-        return msg
-
-
-class InputPrompt(Input):
-    def __init__(self) -> None:
-        super().__init__(placeholder="...")
-
-    def on_input_submitted(self, event: Input.Submitted) -> None:
-        user_prompt = event.value.strip()
-        if not user_prompt:
-            return
-        self.app.query_one(ChatHistory).add_message(
-            user_prompt, classes="user"
-        )
-        self.clear()
-        self.focus()
-        self.app.process_prompt(user_prompt)
 
 
 class Bootgent(App):
@@ -75,7 +27,7 @@ class Bootgent(App):
         thinking = chat.add_message("Thinking...", classes="thinking")
         try:
             r = await send_prompt(prompt, self.messages, self.client, self.metadata)
-            chat.add_message(f"Bot: {r}", classes="bot")
+            chat.add_message(r, classes="bot")
         finally:
             thinking.remove()
         self.query_one("#token-info", TokenInfo).update_display(self.metadata)

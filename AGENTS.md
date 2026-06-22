@@ -53,3 +53,11 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## 5. No Unprompted Commits
+
+**Never run `git commit`, `git push`, or any git mutation without explicit user authorization.**
+
+- Always ask for confirmation before committing.
+- Even if the user said "yes" earlier in the conversation, confirm again.
+- Wait for a clear "commit it" or similar instruction before staging and committing.

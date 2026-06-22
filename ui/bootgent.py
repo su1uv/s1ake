@@ -14,8 +14,10 @@ class ChatMessage(Label):
 class TokenInfo(Static):
     def update_display(self, metadata: dict[str, int]) -> None:
         self.update(
-            f"Input: {metadata['prompt_token_count']}\n"
-            f"Output: {metadata['candidates_token_count']}"
+            "[b]Usage[/b]\n"
+            "[dim]────────[/dim]\n"
+            f"[dim]Input[/dim]  [b]{metadata['prompt_token_count']}[/b]\n"
+            f"[dim]Output[/dim] [b]{metadata['candidates_token_count']}[/b]"
         )
 
 

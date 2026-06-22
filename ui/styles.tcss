@@ -5,8 +5,15 @@ Screen {
 .left-bar {
     height: 100%;
     width: 20%;
-    background: #495057;
+    background: #343A40;
     padding: 1 2;
+    border-right: solid #212529;
+}
+
+#token-info {
+    text-align: center;
+    padding: 2 1;
+    color: #F8F9FA;
 }
 
 .body {

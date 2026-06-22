@@ -25,14 +25,20 @@ ChatHistory {
 
 ChatMessage {
     width: 100%;
-    padding: 0 1;
+    padding: 1 2;
+    margin: 0 0 1 0;
+}
+
+.user {
+    background: #343A40;
+}
+
+.bot {
+    background: #495057;
 }
 
 InputPrompt {
     height: 7%;
     padding: 0 1;
-}
-
-Label {
-    background: #343A40;
+    margin: 1 0;
 }

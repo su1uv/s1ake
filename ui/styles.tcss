@@ -37,6 +37,13 @@ ChatMessage {
     background: #495057;
 }
 
+.thinking {
+    text-style: italic;
+    color: #ADB5BD;
+    background: transparent;
+    text-align: center;
+}
+
 InputPrompt {
     height: 7%;
     padding: 0 1;

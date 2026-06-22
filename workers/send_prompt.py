@@ -1,3 +1,5 @@
+import asyncio
+
 from google.genai import Client, types
 
 from functions.get_agent_response import get_agent_response
@@ -9,7 +11,9 @@ async def send_prompt(
     messages.append(types.Content(role="user", parts=[types.Part(text=user_prompt)]))
 
     for _ in range(20):
-        r: types.GenerateContentResponse | str = get_agent_response(messages, client)
+        r: types.GenerateContentResponse | str = await asyncio.to_thread(
+            get_agent_response, messages, client
+        )
         if isinstance(r, str):
             return r
         if r.usage_metadata is None:

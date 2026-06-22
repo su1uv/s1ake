@@ -12,9 +12,11 @@ class ChatMessage(Label):
 
 
 class ChatHistory(VerticalScroll):
-    def add_message(self, text: str, classes: str = "") -> None:
-        self.mount(ChatMessage(text, classes=classes))
+    def add_message(self, text: str, classes: str = "") -> ChatMessage:
+        msg = ChatMessage(text, classes=classes)
+        self.mount(msg)
         self.scroll_end(animate=False)
+        return msg
 
 
 class InputPrompt(Input):
@@ -41,8 +43,13 @@ class Bootgent(App):
 
     @work(exclusive=True)
     async def process_prompt(self, prompt: str) -> None:
-        r = await send_prompt(prompt, self.messages, self.client)
-        self.query_one(ChatHistory).add_message(f"Bot: {r}", classes="bot")
+        chat = self.query_one(ChatHistory)
+        thinking = chat.add_message("Thinking...", classes="thinking")
+        try:
+            r = await send_prompt(prompt, self.messages, self.client)
+            chat.add_message(f"Bot: {r}", classes="bot")
+        finally:
+            thinking.remove()
 
     def compose(self) -> ComposeResult:
         yield Header()

@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 from google.genai.client import Client
 
-from ui.bootgent import Bootgent
+from ui.s1ake import S1ake
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ def main():
 
     client: Client = genai.Client(api_key=api_key)
 
-    Bootgent(messages, client, metadata).run()
+    S1ake(messages, client, metadata).run()
 
 
 if __name__ == "__main__":

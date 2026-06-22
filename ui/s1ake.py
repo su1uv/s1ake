@@ -10,7 +10,7 @@ from ui.components.token_info import TokenInfo
 from workers.send_prompt import send_prompt
 
 
-class Bootgent(App):
+class S1ake(App):
     CSS_PATH = "styles.tcss"
 
     def __init__(

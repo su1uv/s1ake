@@ -71,8 +71,7 @@ ChatMessage {
     width: 1fr;
     height: auto;
     background: transparent;
-    padding: 0 2 0 0;
-    color: #F8F9FA;
+    padding: 0;
 }
 
 .thinking {

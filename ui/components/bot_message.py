@@ -1,7 +1,7 @@
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Label, Static
+from textual.widgets import Markdown, Static
 
 
 class BotMessage(Horizontal):
@@ -17,4 +17,4 @@ class BotMessage(Horizontal):
 
     def compose(self) -> ComposeResult:
         yield Static(self._heart(), classes="bot-icon")
-        yield Label(self.text, classes="bot-content")
+        yield Markdown(self.text, classes="bot-content")

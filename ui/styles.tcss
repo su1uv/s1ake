@@ -82,7 +82,19 @@ ChatMessage {
 }
 
 InputPrompt {
-    height: 7%;
-    padding: 0 1;
-    margin: 1 0;
+    height: 3;
+    width: 1fr;
+    margin: 1 1;
+    padding-left: 1;
+    border-left: solid #CDB4DB;
+    background: transparent;
+}
+
+.input-field {
+    width: 1fr;
+    height: 100%;
+    background: #343A40;
+    border: none;
+    padding: 1 2;
+    color: #F8F9FA;
 }

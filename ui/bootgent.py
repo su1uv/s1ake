@@ -1,7 +1,8 @@
 from google.genai import Client, types
 from textual import work
 from textual.app import App, ComposeResult
-from textual.containers import VerticalGroup, VerticalScroll
+from textual.containers import Horizontal, VerticalGroup, VerticalScroll
+from textual.widget import Widget
 from textual.widgets import Footer, Header, Input, Label, Static
 
 from workers.send_prompt import send_prompt
@@ -9,6 +10,15 @@ from workers.send_prompt import send_prompt
 
 class ChatMessage(Label):
     pass
+
+
+class UserMessage(Horizontal):
+    def __init__(self, text: str, classes: str = "") -> None:
+        super().__init__(classes=classes)
+        self.text = text
+
+    def compose(self) -> ComposeResult:
+        yield Label(self.text, classes="user-content")
 
 
 class TokenInfo(Static):
@@ -22,8 +32,11 @@ class TokenInfo(Static):
 
 
 class ChatHistory(VerticalScroll):
-    def add_message(self, text: str, classes: str = "") -> ChatMessage:
-        msg = ChatMessage(text, classes=classes)
+    def add_message(self, text: str, classes: str = "") -> Widget:
+        if classes == "user":
+            msg: Widget = UserMessage(text, classes=classes)
+        else:
+            msg = ChatMessage(text, classes=classes)
         self.mount(msg)
         self.scroll_end(animate=False)
         return msg
@@ -38,7 +51,7 @@ class InputPrompt(Input):
         if not user_prompt:
             return
         self.app.query_one(ChatHistory).add_message(
-            f"You: {user_prompt}", classes="user"
+            user_prompt, classes="user"
         )
         self.clear()
         self.focus()

@@ -37,7 +37,19 @@ ChatMessage {
 }
 
 .user {
+    width: 100%;
+    height: auto;
+    margin: 0 0 1 0;
+    border-left: solid purple;
+    padding-left: 1;
+    background: transparent;
+}
+
+.user-content {
+    width: 1fr;
+    height: auto;
     background: #343A40;
+    padding: 1 2;
 }
 
 .bot {

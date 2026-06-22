@@ -4,11 +4,11 @@ from src.call_function import available_functions, call_function
 from src.prompts import system_prompt
 
 
-def get_agent_response(
+async def get_agent_response(
     messages: list[types.Content],
     client: Client,
 ) -> types.GenerateContentResponse | str:
-    r: types.GenerateContentResponse = client.models.generate_content(
+    r: types.GenerateContentResponse = await client.aio.models.generate_content(
         model="gemini-2.5-flash",
         contents=messages,
         config=types.GenerateContentConfig(
@@ -31,7 +31,6 @@ def get_agent_response(
             ):
                 return "[Error] no function response"
             func_results.append(func_call_result.parts[0])
-            # print(f"-> {func_call_result.parts[0].function_response.response}")
 
             messages.append(types.Content(role="user", parts=func_results))
 
